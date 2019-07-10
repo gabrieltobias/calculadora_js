@@ -15,6 +15,30 @@ class CalcController{
     this.initButtonsEvents();
     this.initKeyBoard();
   }
+  //Ctrl V
+  pasteFromClipboard(){
+    //Cria um evento quando a função de paste é ativada
+    document.addEventListener('paste',e=>{
+      //cria uma variavel com o conteúdo do que foi colado
+      let text = e.clipboardData.getData('Text');
+      //Troca o display convertendo p/ float
+      this.displayCalc = parseFloat(text);
+    });
+  }
+  //Ctrl c
+  copyToClipboard(){
+    let input = document.createElement('input');
+
+    input.value = this.displayCalc;
+
+    document.body.appendChild(input);
+
+    input.select();
+
+    document.execCommand("Copy");
+
+    input.remove();
+  }
   //Metodo que executa sempre que é criada a classe
   initialize(){
     //Cria um método que muda a data e hora da tela
@@ -25,7 +49,9 @@ class CalcController{
     },1000)
 
     this.setLastNumbertoDisplay();
+    this.pasteFromClipboard();
   }
+
   //Evento para iniciar os comandos do teclado
   initKeyBoard(){
     document.addEventListener('keyup',e=>{
@@ -63,6 +89,9 @@ class CalcController{
         case '8':
         case '9':
         this.addOperation(parseInt(e.key));
+        break;
+        case 'c':
+        if(e.ctrlKey) this.copyToClipboard();
         break;
       }
     });
