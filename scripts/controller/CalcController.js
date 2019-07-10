@@ -3,6 +3,8 @@ class CalcController{
   constructor(){
     //Define como variaveis os elementos DOM do html
     // O _ serve p/ dizer que o atributo é private ou seja, serve somente para dentro da classe
+    this._audioOnOff = false;
+    this._audio = new Audio('click.mp3');
     this._lastOperator = '';
     this._lastNumber = '';
     this._locale = 'pt-br';
@@ -50,11 +52,29 @@ class CalcController{
 
     this.setLastNumbertoDisplay();
     this.pasteFromClipboard();
+
+    document.querySelectorAll('.btn-ac').forEach(btn=>{
+      btn.addEventListener('dblclick',e=>{
+        this.toggleAudio();
+      });
+    });
+  }
+
+  toggleAudio(){
+    this._audioOnOff = !this._audioOnOff;
+  }
+
+  playAudio(){
+    if(this._audioOnOff){
+      this._audio.currentTime = 0;
+      this._audio.play();
+    }
   }
 
   //Evento para iniciar os comandos do teclado
   initKeyBoard(){
     document.addEventListener('keyup',e=>{
+      this.playAudio();
       console.log(e.key);
       switch (e.key) {
         case 'Escape':
@@ -138,7 +158,13 @@ class CalcController{
     }
   }
   getResult(){
-    return eval(this._operation.join(""));
+    try{
+      return eval(this._operation.join(""));
+    }catch(e){
+      setTimeout(()=>{
+        this.setError();
+      },1);
+    }
   }
 
   //Classe calc
@@ -244,6 +270,7 @@ class CalcController{
     this.setLastNumbertoDisplay();
   }
   execBtn(value){
+    this.playAudio();
     switch (value) {
       case 'ac':
       this.clearAll();
@@ -322,6 +349,12 @@ class CalcController{
     return this._displayCalcEl.innerHTML;
   }
   set displayCalc(value){
+    //Limita o tamanho do resultado para ate 10 digitos
+    if(value.toString().length > 10){
+      this.setError();
+      return
+    }
+
     this._displayCalcEl.innerHTML = value;
   }
   //Get e set da data atual
