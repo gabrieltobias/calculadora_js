@@ -36,6 +36,8 @@ class CalcController{
   //Funcao para limpar as operações
   clearAll(){
     this._operation = [];
+    this._lastNumber = '';
+    this._lastOperator = '';
     this.setLastNumbertoDisplay();
   }
   //Função para limpar a ultima entrada
@@ -89,7 +91,6 @@ class CalcController{
 
     let result = this.getResult();
 
-
     if(last == '%'){
       result /= 100;
       this._operation = [result];
@@ -104,17 +105,19 @@ class CalcController{
 
     let lastItem;
 
-    for(let i = this._operation.length - 1;i>=0;i--){
+    for (let i = this._operation.length-1; i >= 0; i--){
 
-      if(this.isOperator(this._operation[i])==isOperator){
+      if (this.isOperator(this._operation[i]) === isOperator) {
+
         lastItem = this._operation[i];
         break;
+
       }
+
     }
-    if(!lastItem){
-      lastItem = (isOperator) ? this._lastNumber : this._lastNumber;
-    }
+
     return lastItem;
+
   }
 
   setLastNumbertoDisplay(){
@@ -130,8 +133,6 @@ class CalcController{
       if(this.isOperator(value)){
         //Troca o operador
         this.setLastOperation(value);
-      }else if(isNaN(value)){
-        //Outra coisa = ou .
       }else{
         this.pushOperation(value);
         this.setLastNumbertoDisplay();
@@ -145,7 +146,7 @@ class CalcController{
         //Se for um numero, converte para string e concatena com o ultimo digitado 1 + 2 = 12
         let newValue = this.getLastOperation().toString() + value.toString();
         //Adiciona o novo valor ao array
-        this.setLastOperation(parseInt(newValue));
+        this.setLastOperation(parseFloat(newValue));
 
         //Atualiza o display
         this.setLastNumbertoDisplay();
@@ -157,7 +158,18 @@ class CalcController{
   setError(){
     this.displayCalc = "error";
   }
-
+  addDot(){
+    //Cria uma variavel que recebe o que foi digitado
+    let lasOperation = this.getLastOperation();
+    //Caso seja um operador ou seja vazio apenas adiciona 0.
+    if(this.isOperator(lasOperation)|| !lasOperation){
+      this.pushOperation('0.')
+      //Se nao, converte para string e adiciona o .
+    }else{
+      this.setLastOperation(lasOperation.toString() + '.');
+    }
+    this.setLastNumbertoDisplay();
+  }
   execBtn(value){
     switch (value) {
       case 'ac':
@@ -185,7 +197,7 @@ class CalcController{
       this.calc();
       break;
       case 'ponto':
-      this.addOperation('.');
+      this.addDot();
       break;
       case '0':
       case '1':
