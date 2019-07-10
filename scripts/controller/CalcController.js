@@ -146,7 +146,7 @@ class CalcController{
         //Se for um numero, converte para string e concatena com o ultimo digitado 1 + 2 = 12
         let newValue = this.getLastOperation().toString() + value.toString();
         //Adiciona o novo valor ao array
-        this.setLastOperation(parseFloat(newValue));
+        this.setLastOperation(newValue);
 
         //Atualiza o display
         this.setLastNumbertoDisplay();
@@ -160,13 +160,15 @@ class CalcController{
   }
   addDot(){
     //Cria uma variavel que recebe o que foi digitado
-    let lasOperation = this.getLastOperation();
+    let lastOperation = this.getLastOperation();
+    //Verifica se a ultima operação é uma string e se ja possui ponto
+    if(typeof lastOperation === 'string' && lastOperation.split('').indexOf('.') > -1) return;
     //Caso seja um operador ou seja vazio apenas adiciona 0.
-    if(this.isOperator(lasOperation)|| !lasOperation){
-      this.pushOperation('0.')
+    if(this.isOperator(lastOperation)|| !lastOperation){
+      this.pushOperation('0.');
       //Se nao, converte para string e adiciona o .
     }else{
-      this.setLastOperation(lasOperation.toString() + '.');
+      this.setLastOperation(lastOperation.toString() + '.');
     }
     this.setLastNumbertoDisplay();
   }
